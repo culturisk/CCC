@@ -1,0 +1,89 @@
+{
+  "reminder_meeting": {
+    "casualBuddy": "3 PM, bro. Don’t show up late this time, I’ll clown you.",
+    "caringSibling": "Oi! Don’t ditch the 3 PM meeting — I’ll keep bugging you till you go.",
+    "goodParent": "Sweetheart, it’s 3 PM meeting time. Keep calm and do your best.",
+    "strictProfessional": "3 PM meeting. Be on time. No excuses.",
+    "wildCard": "Guess what’s at 3 PM? Yup, the meeting you’re about to pretend doesn’t exist. Surprise!"
+  },
+
+  "reminder_task": {
+    "casualBuddy": "Yo, finish this quick or I’ll paste it on tomorrow again. Don’t be lazy!",
+    "caringSibling": "Don’t skip this, champ. Knock it out now so you can chill later.",
+    "goodParent": "Sweetheart, take 20 mins and get this done. You’ll feel lighter.",
+    "strictProfessional": "This task needs completion now. Proceed.",
+    "wildCard": "Future-you pinged me: do this now or tomorrow-you cries."
+  },
+
+  "morning_plan": {
+    "casualBuddy": "Mornin’, legend! Here’s your lineup. Don’t fumble it.",
+    "caringSibling": "Wake up, sleepyhead! I sorted your day — make me proud.",
+    "goodParent": "Good morning, love. I arranged your day so it feels smooth.",
+    "strictProfessional": "Today’s schedule is ready. Execute.",
+    "wildCard": "Rise and shine. Today’s plan is mildly chaotic — just like us."
+  },
+
+  "explore_event": {
+    "casualBuddy": "Yo, fun thing nearby. Shall we crash?",
+    "caringSibling": "Found a nice event close by. Go peek?",
+    "goodParent": "There’s a nearby event you might enjoy. A little joy helps.",
+    "strictProfessional": "Relevant nearby event detected. Add if aligned.",
+    "wildCard": "Spotted an event next door. Attend or regret stylishly."
+  },
+
+  "nudge_break": {
+    "casualBuddy": "Oi, take a breather before your brain melts.",
+    "caringSibling": "You’ve been grinding. Stretch, sip, breathe.",
+    "goodParent": "Darling, short break time. Rest a bit.",
+    "strictProfessional": "Break: 10 minutes. Resume afterward.",
+    "wildCard": "Pause. Avoid becoming a keyboard goblin."
+  },
+
+  "nudge_drink_water": {
+    "casualBuddy": "Hydrate, hero. No, coffee doesn’t count.",
+    "caringSibling": "Water break, champ. Do it.",
+    "goodParent": "Sweetheart, take a sip of water.",
+    "strictProfessional": "Hydration reminder: drink now.",
+    "wildCard": "Water or wilt — your call."
+  },
+
+  "exercise_start": {
+    "casualBuddy": "Move it, athlete. 20 minutes, no excuses.",
+    "caringSibling": "Workout time! I’m cheering.",
+    "goodParent": "Let’s stretch and move gently, sweetheart.",
+    "strictProfessional": "Exercise window starts. Proceed.",
+    "wildCard": "Transform mode: ON. Become your final form."
+  },
+
+  "meal_time": {
+    "casualBuddy": "Fuel up. Real food, not vibes.",
+    "caringSibling": "Eat properly, champ. No skipping.",
+    "goodParent": "Meal time, love. Sit and savor.",
+    "strictProfessional": "Nutrition window. Prioritize whole foods.",
+    "wildCard": "Feeding the genius. Try not to inhale it."
+  },
+
+  "family_call": {
+    "casualBuddy": "Ring the fam. Earn instant karma.",
+    "caringSibling": "Quick call home? They’ll love it.",
+    "goodParent": "Call family, darling. It matters.",
+    "strictProfessional": "Family call scheduled. Place the call.",
+    "wildCard": "Dial home base. Love > inbox."
+  },
+
+  "sleep_winddown": {
+    "casualBuddy": "Screens down. Brain bedtime.",
+    "caringSibling": "Wind down, champ. You earned it.",
+    "goodParent": "Time to rest, sweetheart. Sleep well.",
+    "strictProfessional": "Night mode. Power down.",
+    "wildCard": "Hibernate protocol: engage."
+  },
+
+  "celebrate_win": {
+    "casualBuddy": "W! Tiny dance break.",
+    "caringSibling": "Proud of you! Save the glow.",
+    "goodParent": "Well done, love. Savor it.",
+    "strictProfessional": "Objective achieved. Log result.",
+    "wildCard": "Achievement unlocked. Add confetti mentally."
+  }
+}
