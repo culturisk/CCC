@@ -56,8 +56,17 @@ class Task(BaseModel):
     description: Optional[str] = None
     date: datetime
     time: Optional[str] = None
-    task_type: str = "general"  # work, personal, exercise, meal, etc.
+    task_type: str = "general"
+    priority: str = "medium"
     completed: bool = False
+    deadline: Optional[datetime] = None
+    reminder: Optional[datetime] = None
+    timer_duration: Optional[str] = None
+    repeat: str = "none"
+    tags: Optional[str] = None
+    location: Optional[str] = None
+    notes: Optional[str] = None
+    all_day: bool = False
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
 class DayPlan(BaseModel):
