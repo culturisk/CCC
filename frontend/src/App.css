@@ -269,59 +269,166 @@ body {
   animation: slideInDown 0.6s ease-out;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+/* Calendar Specific Styles */
+.cc-calendar {
+  background: transparent;
+  color: white;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--cc-dark);
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--cc-pink) 0%, var(--cc-blue) 100%);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  opacity: 0.8;
-}
-
-/* Loading Spinner */
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-left: 4px solid var(--cc-pink);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Glass Morphism Effect */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+.cc-calendar .rbc-header {
+  background: rgba(31, 31, 58, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 12px 8px;
+  font-weight: 600;
 }
 
-/* Notification Badge */
-.notification-badge {
-  position: relative;
+.cc-calendar .rbc-date-cell {
+  color: #d1d5db;
+  padding: 8px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.notification-badge::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
-  background: var(--cc-pink);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
+.cc-calendar .rbc-date-cell.rbc-off-range {
+  color: #6b7280;
+}
+
+.cc-calendar .rbc-date-cell.rbc-now {
+  background: rgba(236, 72, 153, 0.1);
+  color: #ec4899;
+  font-weight: bold;
+}
+
+.cc-calendar .rbc-month-view {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(31, 31, 58, 0.6);
+}
+
+.cc-calendar .rbc-day-bg {
+  background: rgba(15, 15, 35, 0.8);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cc-calendar .rbc-day-bg.rbc-today {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.cc-calendar .rbc-event {
+  background: linear-gradient(135deg, #ec4899 0%, #3b82f6 100%);
+  border: none;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.cc-calendar .rbc-event:focus, 
+.cc-calendar .rbc-event:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+}
+
+.cc-calendar .rbc-slot-selection {
+  background: rgba(236, 72, 153, 0.2);
+  border: 2px dashed #ec4899;
+}
+
+.cc-calendar .rbc-time-view {
+  background: transparent;
+}
+
+.cc-calendar .rbc-time-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cc-calendar .rbc-time-content {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cc-calendar .rbc-timeslot-group {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cc-calendar .rbc-time-slot {
+  color: #9ca3af;
+}
+
+.cc-calendar .rbc-current-time-indicator {
+  background: #ec4899;
+  height: 2px;
+}
+
+/* DateTime Picker Styles */
+.react-datetime-picker {
+  background: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  border-radius: 8px !important;
+  color: white !important;
+}
+
+.react-datetime-picker__wrapper {
+  background: #1f2937 !important;
+  border: none !important;
+  color: white !important;
+}
+
+.react-datetime-picker__inputGroup {
+  color: white !important;
+}
+
+.react-datetime-picker__inputGroup__input {
+  background: transparent !important;
+  color: white !important;
+  border: none !important;
+}
+
+.react-datetime-picker__button {
+  color: #9ca3af !important;
+}
+
+.react-datetime-picker__button:hover {
+  color: #ec4899 !important;
+}
+
+.react-calendar {
+  background: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  border-radius: 8px !important;
+  color: white !important;
+}
+
+.react-calendar__tile {
+  background: transparent !important;
+  color: white !important;
+  border-radius: 4px !important;
+}
+
+.react-calendar__tile:hover {
+  background: rgba(236, 72, 153, 0.2) !important;
+}
+
+.react-calendar__tile--active {
+  background: linear-gradient(135deg, #ec4899 0%, #3b82f6 100%) !important;
+  color: white !important;
+}
+
+.react-clock {
+  background: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  border-radius: 8px !important;
+}
+
+.react-clock__face {
+  border: 1px solid #374151 !important;
+}
+
+.react-clock__hand {
+  stroke: #ec4899 !important;
+}
+
+.react-clock__mark {
+  stroke: #9ca3af !important;
 }
