@@ -39,11 +39,32 @@ const PaywallScreen = () => {
   const handleSubscribe = async () => {
     setProcessing(true);
     
-    // Simulate PayPal payment flow
     try {
-      const result = await subscribe(selectedPlan);
-      if (result.success) {
-        // Payment successful, user will be redirected to main app
+      // Check if PayPal SDK is loaded
+      if (window.paypal) {
+        // Create PayPal order
+        const order = await window.paypal.Orders.create({
+          intent: 'CAPTURE',
+          purchase_units: [{
+            amount: {
+              currency_code: 'USD',
+              value: selectedPlan === 'monthly' ? '4.99' : '39.99'
+            },
+            description: `Cc Calendar - ${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} Subscription`
+          }]
+        });
+        
+        // For now, simulate successful payment
+        const result = await subscribe(selectedPlan);
+        if (result.success) {
+          // Payment successful, user will be redirected to main app
+        }
+      } else {
+        // Fallback: simulate payment for development
+        const result = await subscribe(selectedPlan);
+        if (result.success) {
+          // Payment successful
+        }
       }
     } catch (error) {
       console.error('Payment failed:', error);
