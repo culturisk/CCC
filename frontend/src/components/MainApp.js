@@ -4,23 +4,37 @@ import TaskManager from './TaskManager';
 import ExploreSection from './ExploreSection';
 import PersonaChat from './PersonaChat';
 
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import CalendarView from './CalendarView';
+import ExploreSection from './ExploreSection';
+import PersonaChat from './PersonaChat';
+
 const MainApp = () => {
   const { user, trialStatus, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('tasks');
+  const [activeTab, setActiveTab] = useState('calendar');
   const [currentMessage, setCurrentMessage] = useState('');
 
   useEffect(() => {
     // Welcome message on app load
     if (user?.selected_persona) {
-      setCurrentMessage(`Good ${getTimeOfDay()}! Ready to make today amazing?`);
+      setCurrentMessage(getWelcomeMessage());
     }
   }, [user]);
 
-  const getTimeOfDay = () => {
+  const getWelcomeMessage = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'morning';
-    if (hour < 17) return 'afternoon';
-    return 'evening';
+    const timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+    
+    const messages = {
+      casualBuddy: `Good ${timeOfDay}! Ready to crush today's schedule?`,
+      caringSibling: `Hey there! Hope your ${timeOfDay} is going well. Let's plan something awesome!`,
+      goodParent: `Good ${timeOfDay}, sweetheart! Time to organize your day with love and care.`,
+      strictProfessional: `Good ${timeOfDay}. Time to review your calendar and execute your plans efficiently.`,
+      wildCard: `${timeOfDay.charAt(0).toUpperCase() + timeOfDay.slice(1)} vibes! Let's make today unpredictably awesome!`
+    };
+    
+    return messages[user?.selected_persona] || `Good ${timeOfDay}! Let's make today productive!`;
   };
 
   const handleTabChange = (tab) => {
@@ -28,9 +42,9 @@ const MainApp = () => {
     
     // Persona messages for different sections
     const messages = {
-      tasks: "Let's tackle your tasks!",
+      calendar: "Let's see what's on your schedule!",
       explore: "Time to discover what's around you!",
-      settings: "Let's adjust your preferences."
+      settings: "Let's fine-tune your preferences."
     };
     
     if (messages[tab]) {
@@ -42,7 +56,7 @@ const MainApp = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
       {/* Header */}
       <header className="bg-cc-card border-b border-gray-800 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="cc-logo-container">
@@ -61,6 +75,29 @@ const MainApp = () => {
               </div>
             </div>
             
+            {/* Navigation Tabs */}
+            <nav className="hidden md:flex space-x-1 bg-gray-800/50 rounded-lg p-1">
+              {[
+                { id: 'calendar', name: 'Calendar', icon: '📅' },
+                { id: 'explore', name: 'Explore', icon: '🗺️' },
+                { id: 'settings', name: 'Settings', icon: '⚙️' }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabChange(tab.id)}
+                  className={`flex items-center space-x-2 py-2 px-4 rounded-md transition-all ${
+                    activeTab === tab.id
+                      ? 'bg-cc-gradient text-white font-semibold'
+                      : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                  }`}
+                  data-testid={`${tab.id}-tab`}
+                >
+                  <span>{tab.icon}</span>
+                  <span className="hidden lg:inline">{tab.name}</span>
+                </button>
+              ))}
+            </nav>
+            
             <button
               onClick={logout}
               className="text-gray-400 hover:text-white transition-colors"
@@ -74,43 +111,44 @@ const MainApp = () => {
         </div>
       </header>
 
-      {/* Persona Chat */}
+      {/* Persona Chat - only show for important messages */}
       <PersonaChat message={currentMessage} persona={user?.selected_persona} />
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 pb-20">
-        {/* Tab Navigation */}
-        <nav className="flex space-x-1 mb-6 bg-gray-800/50 rounded-lg p-1">
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        {/* Mobile Tab Navigation */}
+        <nav className="md:hidden flex space-x-1 mb-6 bg-gray-800/50 rounded-lg p-1">
           {[
-            { id: 'tasks', name: 'Tasks', icon: '📋' },
+            { id: 'calendar', name: 'Calendar', icon: '📅' },
             { id: 'explore', name: 'Explore', icon: '🗺️' },
             { id: 'settings', name: 'Settings', icon: '⚙️' }
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-md transition-all ${
+              className={`flex-1 flex items-center justify-center space-x-2 py-3 px-2 rounded-md transition-all ${
                 activeTab === tab.id
                   ? 'bg-cc-gradient text-white font-semibold'
                   : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
               }`}
-              data-testid={`${tab.id}-tab`}
+              data-testid={`${tab.id}-tab-mobile`}
             >
               <span>{tab.icon}</span>
-              <span>{tab.name}</span>
+              <span className="text-sm">{tab.name}</span>
             </button>
           ))}
         </nav>
 
         {/* Tab Content */}
         <div className="fade-in">
-          {activeTab === 'tasks' && <TaskManager />}
+          {activeTab === 'calendar' && <CalendarView />}
           {activeTab === 'explore' && <ExploreSection />}
           {activeTab === 'settings' && <SettingsSection />}
         </div>
       </main>
     </div>
   );
+};
 };
 
 const SettingsSection = () => {
