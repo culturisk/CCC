@@ -89,6 +89,15 @@ class TaskRequest(BaseModel):
     date: str
     time: Optional[str] = None
     task_type: str = "general"
+    priority: str = "medium"
+    deadline: Optional[str] = None
+    reminder: Optional[str] = None
+    timer_duration: Optional[str] = None
+    repeat: str = "none"
+    tags: Optional[str] = None
+    location: Optional[str] = None
+    notes: Optional[str] = None
+    all_day: bool = False
 
 class PersonaMessage(BaseModel):
     message_type: str
