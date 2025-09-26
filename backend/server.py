@@ -301,39 +301,133 @@ async def get_persona_message_api(message_type: str, current_user: dict = Depend
 
 @app.get("/api/explore/nearby")
 async def get_nearby_places(lat: float, lng: float, current_user: dict = Depends(get_current_user)):
-    # This will be implemented with Google Maps API
-    # For now, return mock data
-    mock_places = [
-        {
-            "name": "Local Coffee House",
-            "type": "cafe",
-            "distance": "0.3 km",
-            "rating": 4.5,
-            "address": "123 Main St"
-        },
-        {
-            "name": "Co-working Space",
-            "type": "workspace",
-            "distance": "0.5 km",
-            "rating": 4.2,
-            "address": "456 Business Ave"
-        },
-        {
-            "name": "Art Gallery Opening",
-            "type": "event",
-            "distance": "0.8 km",
-            "rating": 4.7,
-            "address": "789 Culture St"
+    import httpx
+    
+    google_api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+    
+    if not google_api_key or google_api_key == "your_google_maps_api_key":
+        # Return mock data if no valid API key
+        mock_places = [
+            {
+                "name": "Local Coffee House",
+                "type": "cafe",
+                "distance": "0.3 km",
+                "rating": 4.5,
+                "address": "123 Main St",
+                "place_id": "mock_1"
+            },
+            {
+                "name": "Co-working Space", 
+                "type": "workspace",
+                "distance": "0.5 km",
+                "rating": 4.2,
+                "address": "456 Business Ave",
+                "place_id": "mock_2"
+            },
+            {
+                "name": "Art Gallery Opening",
+                "type": "event",
+                "distance": "0.8 km", 
+                "rating": 4.7,
+                "address": "789 Culture St",
+                "place_id": "mock_3"
+            }
+        ]
+        
+        persona = current_user.get("selected_persona", "casualBuddy")
+        message = get_persona_message("explore_event", persona)
+        
+        return {
+            "places": mock_places,
+            "message": message,
+            "mock_data": True
         }
-    ]
     
-    persona = current_user.get("selected_persona", "casualBuddy")
-    message = get_persona_message("explore_event", persona)
-    
-    return {
-        "places": mock_places,
-        "message": message
-    }
+    try:
+        # Use Google Places API to get nearby places
+        async with httpx.AsyncClient() as client:
+            # Search for interesting places nearby
+            search_types = ["cafe", "restaurant", "tourist_attraction", "museum", "park", "library"]
+            all_places = []
+            
+            for place_type in search_types[:3]:  # Limit to 3 types to avoid too many API calls
+                url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
+                params = {
+                    "location": f"{lat},{lng}",
+                    "radius": 2000,  # 2km radius
+                    "type": place_type,
+                    "key": google_api_key
+                }
+                
+                response = await client.get(url, params=params)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    for place in data.get("results", [])[:2]:  # Take top 2 from each type
+                        place_info = {
+                            "name": place.get("name", "Unknown Place"),
+                            "type": place_type,
+                            "rating": place.get("rating", 0),
+                            "address": place.get("vicinity", "Address not available"),
+                            "place_id": place.get("place_id"),
+                            "price_level": "€" * place.get("price_level", 1) if place.get("price_level") else "Free",
+                            "open_now": place.get("opening_hours", {}).get("open_now", None)
+                        }
+                        
+                        # Calculate approximate distance (simplified)
+                        place_lat = place.get("geometry", {}).get("location", {}).get("lat", lat)
+                        place_lng = place.get("geometry", {}).get("location", {}).get("lng", lng)
+                        
+                        # Simple distance calculation (not accurate, but good enough for display)
+                        distance = ((lat - place_lat) ** 2 + (lng - place_lng) ** 2) ** 0.5 * 111  # Rough km conversion
+                        place_info["distance"] = f"{distance:.1f} km"
+                        
+                        all_places.append(place_info)
+            
+            # Sort by rating and take top 5
+            all_places.sort(key=lambda x: x["rating"], reverse=True)
+            selected_places = all_places[:5]
+            
+            persona = current_user.get("selected_persona", "casualBuddy")
+            message = get_persona_message("explore_event", persona)
+            
+            return {
+                "places": selected_places,
+                "message": message,
+                "mock_data": False
+            }
+            
+    except Exception as e:
+        print(f"Google Maps API error: {e}")
+        
+        # Fallback to mock data on API failure
+        mock_places = [
+            {
+                "name": "Nearby Coffee Shop",
+                "type": "cafe", 
+                "distance": "0.4 km",
+                "rating": 4.3,
+                "address": "Local Area"
+            },
+            {
+                "name": "Community Center",
+                "type": "community",
+                "distance": "0.7 km", 
+                "rating": 4.1,
+                "address": "Downtown"
+            }
+        ]
+        
+        persona = current_user.get("selected_persona", "casualBuddy")
+        message = get_persona_message("explore_event", persona)
+        
+        return {
+            "places": mock_places,
+            "message": message,
+            "mock_data": True,
+            "error": "API unavailable"
+        }
 
 @app.post("/api/payment/subscribe")
 async def process_subscription(payment_data: dict, current_user: dict = Depends(get_current_user)):
