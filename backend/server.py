@@ -238,10 +238,32 @@ async def create_task(request: TaskRequest, current_user: dict = Depends(get_cur
     if not trial_status["trial_active"] and not trial_status["subscription_active"]:
         raise HTTPException(status_code=402, detail="Trial expired. Please subscribe to continue.")
     
+    # Parse dates
+    task_date = datetime.fromisoformat(request.date.replace('Z', '+00:00'))
+    deadline = None
+    reminder = None
+    
+    if request.deadline:
+        deadline = datetime.fromisoformat(request.deadline.replace('Z', '+00:00'))
+    if request.reminder:
+        reminder = datetime.fromisoformat(request.reminder.replace('Z', '+00:00'))
+    
     task_data = Task(
         user_id=current_user["id"],
-        date=datetime.fromisoformat(request.date.replace('Z', '+00:00')),
-        **{k: v for k, v in request.dict().items() if k != 'date'}
+        title=request.title,
+        description=request.description,
+        date=task_date,
+        time=request.time,
+        task_type=request.task_type,
+        priority=request.priority,
+        deadline=deadline,
+        reminder=reminder,
+        timer_duration=request.timer_duration,
+        repeat=request.repeat,
+        tags=request.tags,
+        location=request.location,
+        notes=request.notes,
+        all_day=request.all_day
     )
     
     await db.tasks.insert_one(task_data.dict())
