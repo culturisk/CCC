@@ -192,6 +192,44 @@ const SettingsSection = () => {
 
       <div className="bg-cc-card rounded-2xl p-6">
         <h2 className="text-xl font-semibold text-white mb-4">
+          Calendar Settings
+        </h2>
+        
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-white font-medium">Google Calendar Sync</h3>
+              <p className="text-sm text-gray-400">Sync your Cc tasks with Google Calendar</p>
+            </div>
+            <button className="btn-cc-secondary text-sm">
+              Connect Google Calendar
+            </button>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-white font-medium">Default View</h3>
+              <p className="text-sm text-gray-400">Choose your preferred calendar view</p>
+            </div>
+            <select className="bg-gray-700 text-white rounded-lg px-3 py-2 text-sm">
+              <option value="month">Month View</option>
+              <option value="week">Week View</option>
+              <option value="day">Day View</option>
+            </select>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-white font-medium">Smart Notifications</h3>
+              <p className="text-sm text-gray-400">Get reminders and suggestions</p>
+            </div>
+            <input type="checkbox" defaultChecked className="w-4 h-4 text-cc-pink rounded" />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-cc-card rounded-2xl p-6">
+        <h2 className="text-xl font-semibold text-white mb-4">
           Profile Information
         </h2>
         
@@ -202,8 +240,8 @@ const SettingsSection = () => {
           </div>
           
           <div>
-            <label className="text-sm text-gray-400">Timezone</label>
-            <p className="text-white font-medium">{user?.timezone}</p>
+            <label className="text-sm text-gray-400">Location</label>
+            <p className="text-white font-medium">{user?.city || user?.timezone}</p>
           </div>
           
           <div>
@@ -226,10 +264,10 @@ const SettingsSection = () => {
         </h2>
         
         <div className="text-gray-300 space-y-2">
-          <p>Version 1.0.0 - Minimal Release</p>
-          <p>A quirky, culture-centric calendar with AI personas</p>
+          <p>Version 2.0.0 - Enhanced Calendar Release</p>
+          <p>A comprehensive culture-centric calendar with AI personas</p>
           <p className="text-sm text-gray-500">
-            Built with ❤️ for organizing life with personality
+            Built with ❤️ for organizing life with personality and intelligence
           </p>
         </div>
       </div>
