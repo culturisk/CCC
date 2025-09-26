@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import './App.css';
 import OnboardingScreen from './components/OnboardingScreen';
 import MainApp from './components/MainApp';
 import PaywallScreen from './components/PaywallScreen';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { useCapacitor } from './hooks/useCapacitor';
 
 // PWA Service Worker Registration
 const registerServiceWorker = () => {
@@ -24,6 +25,7 @@ const registerServiceWorker = () => {
 
 function AppRoutes() {
   const { user, trialStatus, loading } = useAuth();
+  const { isNative } = useCapacitor();
 
   if (loading) {
     return (
@@ -32,7 +34,9 @@ function AppRoutes() {
           <div className="cc-logo-container animate-pulse">
             <div className="cc-logo"></div>
           </div>
-          <div className="text-white text-lg font-light">Loading Cc...</div>
+          <div className="text-white text-lg font-light">
+            Loading Cc{isNative ? ' Mobile' : ''}...
+          </div>
         </div>
       </div>
     );
