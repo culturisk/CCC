@@ -143,7 +143,6 @@ const MainApp = () => {
     </div>
   );
 };
-};
 
 const SettingsSection = () => {
   const { user, updatePersona } = useAuth();
