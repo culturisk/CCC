@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import TaskManager from './TaskManager';
-import ExploreSection from './ExploreSection';
-import PersonaChat from './PersonaChat';
-
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
 import CalendarView from './CalendarView';
 import ExploreSection from './ExploreSection';
 import PersonaChat from './PersonaChat';
