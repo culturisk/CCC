@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import Select from 'react-select';
 
 const PERSONAS = [
   {
@@ -47,16 +48,23 @@ const PERSONALITY_TYPES = [
   'Analytical & Detail-oriented'
 ];
 
-const TIMEZONES = [
-  'UTC-8 (PST)',
-  'UTC-7 (MST)',
-  'UTC-6 (CST)',
-  'UTC-5 (EST)',
-  'UTC+0 (GMT)',
-  'UTC+1 (CET)',
-  'UTC+5:30 (IST)',
-  'UTC+8 (CST)',
-  'UTC+9 (JST)'
+// Popular cities with their timezones for quick selection
+const POPULAR_CITIES = [
+  { value: 'America/New_York', label: 'New York, USA', country: 'United States' },
+  { value: 'America/Los_Angeles', label: 'Los Angeles, USA', country: 'United States' },
+  { value: 'America/Chicago', label: 'Chicago, USA', country: 'United States' },
+  { value: 'Europe/London', label: 'London, UK', country: 'United Kingdom' },
+  { value: 'Europe/Paris', label: 'Paris, France', country: 'France' },
+  { value: 'Europe/Berlin', label: 'Berlin, Germany', country: 'Germany' },
+  { value: 'Asia/Tokyo', label: 'Tokyo, Japan', country: 'Japan' },
+  { value: 'Asia/Shanghai', label: 'Shanghai, China', country: 'China' },
+  { value: 'Asia/Mumbai', label: 'Mumbai, India', country: 'India' },
+  { value: 'Asia/Dubai', label: 'Dubai, UAE', country: 'United Arab Emirates' },
+  { value: 'Australia/Sydney', label: 'Sydney, Australia', country: 'Australia' },
+  { value: 'America/Toronto', label: 'Toronto, Canada', country: 'Canada' },
+  { value: 'America/Sao_Paulo', label: 'São Paulo, Brazil', country: 'Brazil' },
+  { value: 'Africa/Cairo', label: 'Cairo, Egypt', country: 'Egypt' },
+  { value: 'Europe/Moscow', label: 'Moscow, Russia', country: 'Russia' }
 ];
 
 const OnboardingScreen = () => {
@@ -64,7 +72,9 @@ const OnboardingScreen = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
-    timezone: 'UTC-5 (EST)',
+    timezone: '',
+    city: '',
+    country: '',
     personality_type: '',
     selected_persona: ''
   });
@@ -81,12 +91,26 @@ const OnboardingScreen = () => {
     }
   };
 
+  const handleCitySelect = (selectedOption) => {
+    setFormData({
+      ...formData,
+      timezone: selectedOption.value,
+      city: selectedOption.label.split(',')[0],
+      country: selectedOption.country
+    });
+  };
+
   const handleSubmit = async () => {
-    if (!formData.name || !formData.personality_type || !formData.selected_persona) {
+    if (!formData.name || !formData.timezone || !formData.personality_type || !formData.selected_persona) {
       return;
     }
 
-    await onboardUser(formData);
+    const submitData = {
+      ...formData,
+      timezone: `${formData.city}, ${formData.country} (${formData.timezone})`
+    };
+
+    await onboardUser(submitData);
   };
 
   const isStepValid = () => {
@@ -100,6 +124,43 @@ const OnboardingScreen = () => {
       default:
         return false;
     }
+  };
+
+  const customSelectStyles = {
+    control: (provided) => ({
+      ...provided,
+      backgroundColor: '#1f2937',
+      borderColor: '#374151',
+      color: '#ffffff',
+      '&:hover': {
+        borderColor: '#ec4899',
+      },
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: '#1f2937',
+      border: '1px solid #374151',
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? '#374151' : '#1f2937',
+      color: '#ffffff',
+      '&:hover': {
+        backgroundColor: '#374151',
+      },
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: '#ffffff',
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: '#9ca3af',
+    }),
+    input: (provided) => ({
+      ...provided,
+      color: '#ffffff',
+    }),
   };
 
   return (
@@ -156,17 +217,19 @@ const OnboardingScreen = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Your timezone
+                  What's your city?
                 </label>
-                <select
-                  value={formData.timezone}
-                  onChange={(e) => setFormData({...formData, timezone: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cc-pink focus:border-transparent outline-none transition-all"
-                >
-                  {TIMEZONES.map(tz => (
-                    <option key={tz} value={tz}>{tz}</option>
-                  ))}
-                </select>
+                <Select
+                  options={POPULAR_CITIES}
+                  styles={customSelectStyles}
+                  placeholder="Search for your city..."
+                  isSearchable={true}
+                  onChange={handleCitySelect}
+                  value={POPULAR_CITIES.find(city => city.value === formData.timezone) || null}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  This helps us show local events and set your timezone
+                </p>
               </div>
             </div>
           )}
