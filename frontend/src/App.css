@@ -1,0 +1,327 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Cc Calendar Branding */
+:root {
+  --cc-pink: #ec4899;
+  --cc-blue: #3b82f6;
+  --cc-dark: #0f0f23;
+  --cc-gray: #1f1f3a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--cc-dark);
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* Cc Logo Component - Inspired by branding */
+.cc-logo-container {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+}
+
+.cc-logo {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--cc-pink) 0%, var(--cc-blue) 100%);
+  border-radius: 50% 20% 50% 20%;
+  position: relative;
+  animation: float 3s ease-in-out infinite;
+}
+
+.cc-logo::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  right: 15%;
+  width: 35%;
+  height: 35%;
+  background: var(--cc-dark);
+  border-radius: 50%;
+}
+
+.cc-logo-large {
+  width: 120px;
+  height: 120px;
+}
+
+.cc-logo-large .cc-logo::before {
+  top: 20%;
+  right: 20%;
+  width: 30%;
+  height: 30%;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Background Gradients */
+.bg-cc-gradient {
+  background: linear-gradient(135deg, var(--cc-pink) 0%, var(--cc-blue) 100%);
+}
+
+.bg-cc-dark {
+  background: linear-gradient(135deg, var(--cc-dark) 0%, var(--cc-gray) 100%);
+}
+
+.bg-cc-card {
+  background: rgba(31, 31, 58, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Text Gradients */
+.text-cc-gradient {
+  background: linear-gradient(135deg, var(--cc-pink) 0%, var(--cc-blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Custom Button Styles */
+.btn-cc-primary {
+  background: linear-gradient(135deg, var(--cc-pink) 0%, var(--cc-blue) 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+}
+
+.btn-cc-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+}
+
+.btn-cc-secondary {
+  background: transparent;
+  border: 2px solid transparent;
+  background-image: linear-gradient(var(--cc-dark), var(--cc-dark)), 
+                    linear-gradient(135deg, var(--cc-pink) 0%, var(--cc-blue) 100%);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  color: white;
+  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.btn-cc-secondary:hover {
+  background-image: linear-gradient(135deg, var(--cc-pink) 0%, var(--cc-blue) 100%), 
+                    linear-gradient(135deg, var(--cc-pink) 0%, var(--cc-blue) 100%);
+  transform: translateY(-1px);
+}
+
+/* Persona Cards */
+.persona-card {
+  background: rgba(31, 31, 58, 0.6);
+  backdrop-filter: blur(8px);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.persona-card:hover {
+  border-color: var(--cc-pink);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(236, 72, 153, 0.2);
+}
+
+.persona-card.selected {
+  border-color: var(--cc-blue);
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Task Cards */
+.task-card {
+  background: var(--cc-card);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--cc-pink);
+}
+
+.task-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.task-card.completed {
+  opacity: 0.6;
+  border-left-color: #22c55e;
+}
+
+/* Timeline Styles */
+.timeline-item {
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 20px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cc-pink) 0%, var(--cc-blue) 100%);
+}
+
+.timeline-item::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 20px;
+  width: 2px;
+  height: calc(100% + 8px);
+  background: rgba(236, 72, 153, 0.3);
+}
+
+.timeline-item:last-child::after {
+  display: none;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .cc-logo-container {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .cc-logo-large {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .persona-card {
+    padding: 16px;
+  }
+  
+  .btn-cc-primary,
+  .btn-cc-secondary {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Smooth Animations */
+.fade-in {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.fade-in-delayed {
+  animation: slideInUp 0.8s ease-out 0.2s both;
+}
+
+.fade-in-down {
+  animation: slideInDown 0.6s ease-out;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cc-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--cc-pink) 0%, var(--cc-blue) 100%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid var(--cc-pink);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Glass Morphism Effect */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Notification Badge */
+.notification-badge {
+  position: relative;
+}
+
+.notification-badge::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: var(--cc-pink);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
