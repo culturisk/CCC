@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkcc_calendar_pwa=self.webpackChunkcc_calendar_pwa||[]).push([[973],{9973:(a,c,e)=>{e.r(c),e.d(c,{SplashScreenWeb:()=>n});var s=e(9344);class n extends s.E_{async show(a){}async hide(a){}}}}]);
