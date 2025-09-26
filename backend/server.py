@@ -255,17 +255,115 @@ async def create_task(request: TaskRequest, current_user: dict = Depends(get_cur
     }
 
 @app.get("/api/tasks")
-async def get_tasks(date: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+async def get_tasks(
+    date: Optional[str] = None, 
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
     query = {"user_id": current_user["id"]}
     
     if date:
         target_date = datetime.fromisoformat(date.replace('Z', '+00:00'))
-        start_date = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
-        end_date = start_date + timedelta(days=1)
-        query["date"] = {"$gte": start_date, "$lt": end_date}
+        start_date_dt = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date_dt = start_date_dt + timedelta(days=1)
+        query["date"] = {"$gte": start_date_dt, "$lt": end_date_dt}
+    elif start_date and end_date:
+        start_date_dt = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
+        end_date_dt = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
+        query["date"] = {"$gte": start_date_dt, "$lte": end_date_dt}
     
-    tasks = await db.tasks.find(query).to_list(100)
+    tasks = await db.tasks.find(query).to_list(200)
     return {"tasks": tasks}
+
+@app.put("/api/tasks/{task_id}")
+async def update_task(
+    task_id: str, 
+    request: TaskRequest, 
+    current_user: dict = Depends(get_current_user)
+):
+    trial_status = check_trial_status(current_user)
+    if not trial_status["trial_active"] and not trial_status["subscription_active"]:
+        raise HTTPException(status_code=402, detail="Trial expired. Please subscribe to continue.")
+    
+    # Parse dates
+    task_date = datetime.fromisoformat(request.date.replace('Z', '+00:00'))
+    deadline = None
+    reminder = None
+    
+    if request.deadline:
+        deadline = datetime.fromisoformat(request.deadline.replace('Z', '+00:00'))
+    if request.reminder:
+        reminder = datetime.fromisoformat(request.reminder.replace('Z', '+00:00'))
+    
+    update_data = {
+        "title": request.title,
+        "description": request.description,
+        "date": task_date,
+        "time": request.time,
+        "task_type": request.task_type,
+        "priority": request.priority,
+        "deadline": deadline,
+        "reminder": reminder,
+        "timer_duration": request.timer_duration,
+        "repeat": request.repeat,
+        "tags": request.tags,
+        "location": request.location,
+        "notes": request.notes,
+        "all_day": request.all_day
+    }
+    
+    result = await db.tasks.update_one(
+        {"id": task_id, "user_id": current_user["id"]},
+        {"$set": update_data}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    persona = current_user.get("selected_persona", "casualBuddy")
+    message = get_persona_message("reminder_task", persona)
+    
+    return {"message": "Task updated successfully", "persona_message": message}
+
+@app.delete("/api/tasks/{task_id}")
+async def delete_task(task_id: str, current_user: dict = Depends(get_current_user)):
+    result = await db.tasks.delete_one({"id": task_id, "user_id": current_user["id"]})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    return {"message": "Task deleted successfully"}
+
+@app.get("/api/recommendations/holidays")
+async def get_holidays(date: str, current_user: dict = Depends(get_current_user)):
+    # Mock holiday data - in production, integrate with holiday APIs
+    current_date = datetime.fromisoformat(date.replace('Z', '+00:00'))
+    current_month = current_date.month
+    current_year = current_date.year
+    
+    holidays = []
+    
+    # Add some sample holidays based on the month
+    holiday_data = {
+        1: [
+            {"name": "New Year's Day", "date": f"{current_year}-01-01", "type": "holiday"},
+            {"name": "Martin Luther King Jr. Day", "date": f"{current_year}-01-15", "type": "holiday"}
+        ],
+        2: [
+            {"name": "Valentine's Day", "date": f"{current_year}-02-14", "type": "celebration"},
+            {"name": "Presidents Day", "date": f"{current_year}-02-19", "type": "holiday"}
+        ],
+        12: [
+            {"name": "Christmas Day", "date": f"{current_year}-12-25", "type": "holiday"},
+            {"name": "New Year's Eve", "date": f"{current_year}-12-31", "type": "celebration"}
+        ]
+    }
+    
+    if current_month in holiday_data:
+        holidays = holiday_data[current_month]
+    
+    return {"holidays": holidays}
 
 @app.post("/api/plan-day")
 async def plan_my_day(date: str, current_user: dict = Depends(get_current_user)):
