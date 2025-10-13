@@ -50,6 +50,15 @@ class UserEvent(BaseModel):
     rating: Optional[float] = None
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
+class EventRequest(BaseModel):
+    title: str
+    description: Optional[str] = None
+    event_type: str  # cafe, restaurant, cultural, festival, etc.
+    location: str
+    city: str
+    date: Optional[str] = None
+    rating: Optional[float] = None
+
 class UserProfile(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
