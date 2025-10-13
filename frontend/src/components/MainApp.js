@@ -297,7 +297,15 @@ const SettingsSection = () => {
           
           <div>
             <label className="text-sm text-gray-400">Location</label>
-            <p className="text-white font-medium">{user?.city || user?.timezone}</p>
+            <div className="flex items-center justify-between">
+              <p className="text-white font-medium">{user?.city || user?.timezone}</p>
+              <button
+                onClick={() => setShowCityModal(true)}
+                className="text-cc-pink hover:text-cc-blue text-sm underline"
+              >
+                Change City
+              </button>
+            </div>
           </div>
           
           <div>
