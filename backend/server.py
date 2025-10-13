@@ -482,13 +482,17 @@ async def create_event(event: EventRequest, current_user: dict = Depends(get_cur
     if isinstance(event_dict.get('created_at'), datetime):
         event_dict['created_at'] = event_dict['created_at'].isoformat()
     
-    await db.events.insert_one(event_dict)
+    # Insert into database
+    result = await db.events.insert_one(event_dict)
+    
+    # Get the inserted event without MongoDB's _id
+    inserted_event = await db.events.find_one({"id": event_dict["id"]}, {"_id": 0})
     
     persona = current_user.get("selected_persona", "casualBuddy")
     message = get_persona_message("explore_event", persona)
     
     return {
-        "event": event_dict,
+        "event": inserted_event,
         "message": message
     }
 
