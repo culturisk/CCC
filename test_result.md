@@ -293,7 +293,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Task Management Features" # Test task creation, editing, deletion
+    - "Manual Event Management System" # Test event CRUD operations
+    - "City Management Integration" # Test city updates and event integration
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
