@@ -215,3 +215,5 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: "Comprehensive backend API testing completed. Fixed critical MongoDB ObjectId serialization issue in GET /api/tasks and GET /api/user/profile endpoints. All 8 core backend functionalities are working correctly. Google Maps integration is functional but using mocked data due to API key configuration."
+  - agent: "testing"
+    message: "CRITICAL FRONTEND ISSUE DISCOVERED: The onboarding flow has a blocking bug in the React Select city dropdown component. Users cannot proceed past Step 1 because the dropdown is non-functional, preventing city selection and keeping the Next button disabled. This completely blocks new user registration. All other UI elements (name input, progress indicator, trial message, styling) work correctly. Backend APIs are ready but frontend onboarding must be fixed before users can access the main application."
