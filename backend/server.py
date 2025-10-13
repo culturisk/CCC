@@ -452,135 +452,163 @@ async def get_persona_message_api(message_type: str, current_user: dict = Depend
         "timestamp": datetime.utcnow()
     }
 
+# User Events - Manual Entry
+@app.post("/api/events")
+async def create_event(event: UserEvent, current_user: dict = Depends(get_current_user)):
+    """Create a custom event/place for the user"""
+    event_dict = event.dict()
+    event_dict["user_id"] = current_user["id"]
+    
+    if isinstance(event_dict.get('created_at'), datetime):
+        event_dict['created_at'] = event_dict['created_at'].isoformat()
+    
+    await db.events.insert_one(event_dict)
+    
+    persona = current_user.get("selected_persona", "casualBuddy")
+    message = get_persona_message("explore_event", persona)
+    
+    return {
+        "event": event_dict,
+        "message": message
+    }
+
+@app.get("/api/events")
+async def get_user_events(city: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    """Get all events for the current user, optionally filtered by city"""
+    query = {"user_id": current_user["id"]}
+    
+    if city:
+        query["city"] = city
+    
+    events = await db.events.find(query, {"_id": 0}).to_list(100)
+    
+    # Get default cultural events for the user's city
+    user_city = city or current_user.get("city", "")
+    default_events = get_default_cultural_events(user_city)
+    
+    # Combine user events with default events
+    all_events = events + default_events
+    
+    persona = current_user.get("selected_persona", "casualBuddy")
+    message = get_persona_message("explore_event", persona)
+    
+    return {
+        "events": all_events,
+        "message": message
+    }
+
+@app.put("/api/events/{event_id}")
+async def update_event(event_id: str, event: UserEvent, current_user: dict = Depends(get_current_user)):
+    """Update an existing event"""
+    event_dict = event.dict()
+    event_dict["user_id"] = current_user["id"]
+    
+    if isinstance(event_dict.get('created_at'), datetime):
+        event_dict['created_at'] = event_dict['created_at'].isoformat()
+    
+    result = await db.events.update_one(
+        {"id": event_id, "user_id": current_user["id"]},
+        {"$set": event_dict}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    return {"message": "Event updated successfully"}
+
+@app.delete("/api/events/{event_id}")
+async def delete_event(event_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete an event"""
+    result = await db.events.delete_one({"id": event_id, "user_id": current_user["id"]})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    return {"message": "Event deleted successfully"}
+
+def get_default_cultural_events(city: str):
+    """Return default cultural events based on city"""
+    # Common events that exist in most cities
+    common_events = [
+        {
+            "id": "default_1",
+            "title": "Local Art Exhibition",
+            "description": "Discover local artists and their work",
+            "event_type": "cultural",
+            "location": "City Art Gallery",
+            "city": city,
+            "date": "Ongoing",
+            "is_default": True
+        },
+        {
+            "id": "default_2",
+            "title": "Food Festival",
+            "description": "Experience local and international cuisines",
+            "event_type": "festival",
+            "location": "Central Park",
+            "city": city,
+            "date": "Weekends",
+            "is_default": True
+        },
+        {
+            "id": "default_3",
+            "title": "Community Library",
+            "description": "Free books, quiet reading space, and events",
+            "event_type": "cultural",
+            "location": "Main Street",
+            "city": city,
+            "date": "Daily",
+            "is_default": True
+        }
+    ]
+    
+    return common_events
+
+# City Update Endpoint
+@app.put("/api/user/city")
+async def update_user_city(city_data: CityUpdate, current_user: dict = Depends(get_current_user)):
+    """Update user's city, country, and timezone"""
+    result = await db.users.update_one(
+        {"id": current_user["id"]},
+        {"$set": {
+            "city": city_data.city,
+            "country": city_data.country,
+            "timezone": f"{city_data.city}, {city_data.country} ({city_data.timezone})"
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {
+        "message": "City updated successfully",
+        "city": city_data.city,
+        "country": city_data.country,
+        "timezone": city_data.timezone
+    }
+
 @app.get("/api/explore/nearby")
-async def get_nearby_places(lat: float, lng: float, current_user: dict = Depends(get_current_user)):
-    import httpx
+async def get_nearby_places(current_user: dict = Depends(get_current_user)):
+    """Get nearby places/events - now uses manual entries instead of Google Maps"""
+    user_city = current_user.get("city", "Your City")
     
-    google_api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+    # Get user's custom events
+    events = await db.events.find({"user_id": current_user["id"]}, {"_id": 0}).to_list(100)
     
-    if not google_api_key or google_api_key == "your_google_maps_api_key":
-        # Return mock data if no valid API key
-        mock_places = [
-            {
-                "name": "Local Coffee House",
-                "type": "cafe",
-                "distance": "0.3 km",
-                "rating": 4.5,
-                "address": "123 Main St",
-                "place_id": "mock_1"
-            },
-            {
-                "name": "Co-working Space", 
-                "type": "workspace",
-                "distance": "0.5 km",
-                "rating": 4.2,
-                "address": "456 Business Ave",
-                "place_id": "mock_2"
-            },
-            {
-                "name": "Art Gallery Opening",
-                "type": "event",
-                "distance": "0.8 km", 
-                "rating": 4.7,
-                "address": "789 Culture St",
-                "place_id": "mock_3"
-            }
-        ]
-        
-        persona = current_user.get("selected_persona", "casualBuddy")
-        message = get_persona_message("explore_event", persona)
-        
-        return {
-            "places": mock_places,
-            "message": message,
-            "mock_data": True
-        }
+    # Get default events for the city
+    default_events = get_default_cultural_events(user_city)
     
-    try:
-        # Use Google Places API to get nearby places
-        async with httpx.AsyncClient() as client:
-            # Search for interesting places nearby
-            search_types = ["cafe", "restaurant", "tourist_attraction", "museum", "park", "library"]
-            all_places = []
-            
-            for place_type in search_types[:3]:  # Limit to 3 types to avoid too many API calls
-                url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-                params = {
-                    "location": f"{lat},{lng}",
-                    "radius": 2000,  # 2km radius
-                    "type": place_type,
-                    "key": google_api_key
-                }
-                
-                response = await client.get(url, params=params)
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    
-                    for place in data.get("results", [])[:2]:  # Take top 2 from each type
-                        place_info = {
-                            "name": place.get("name", "Unknown Place"),
-                            "type": place_type,
-                            "rating": place.get("rating", 0),
-                            "address": place.get("vicinity", "Address not available"),
-                            "place_id": place.get("place_id"),
-                            "price_level": "€" * place.get("price_level", 1) if place.get("price_level") else "Free",
-                            "open_now": place.get("opening_hours", {}).get("open_now", None)
-                        }
-                        
-                        # Calculate approximate distance (simplified)
-                        place_lat = place.get("geometry", {}).get("location", {}).get("lat", lat)
-                        place_lng = place.get("geometry", {}).get("location", {}).get("lng", lng)
-                        
-                        # Simple distance calculation (not accurate, but good enough for display)
-                        distance = ((lat - place_lat) ** 2 + (lng - place_lng) ** 2) ** 0.5 * 111  # Rough km conversion
-                        place_info["distance"] = f"{distance:.1f} km"
-                        
-                        all_places.append(place_info)
-            
-            # Sort by rating and take top 5
-            all_places.sort(key=lambda x: x["rating"], reverse=True)
-            selected_places = all_places[:5]
-            
-            persona = current_user.get("selected_persona", "casualBuddy")
-            message = get_persona_message("explore_event", persona)
-            
-            return {
-                "places": selected_places,
-                "message": message,
-                "mock_data": False
-            }
-            
-    except Exception as e:
-        print(f"Google Maps API error: {e}")
-        
-        # Fallback to mock data on API failure
-        mock_places = [
-            {
-                "name": "Nearby Coffee Shop",
-                "type": "cafe", 
-                "distance": "0.4 km",
-                "rating": 4.3,
-                "address": "Local Area"
-            },
-            {
-                "name": "Community Center",
-                "type": "community",
-                "distance": "0.7 km", 
-                "rating": 4.1,
-                "address": "Downtown"
-            }
-        ]
-        
-        persona = current_user.get("selected_persona", "casualBuddy")
-        message = get_persona_message("explore_event", persona)
-        
-        return {
-            "places": mock_places,
-            "message": message,
-            "mock_data": True,
-            "error": "API unavailable"
-        }
+    # Combine and return
+    all_events = events + default_events
+    
+    persona = current_user.get("selected_persona", "casualBuddy")
+    message = get_persona_message("explore_event", persona)
+    
+    return {
+        "events": all_events,
+        "city": user_city,
+        "message": message
+    }
 
 @app.post("/api/payment/subscribe")
 async def process_subscription(payment_data: dict, current_user: dict = Depends(get_current_user)):
