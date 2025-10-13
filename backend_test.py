@@ -30,6 +30,7 @@ class CcCalendarAPITester:
         self.user_token = None
         self.user_id = None
         self.created_task_id = None
+        self.created_event_id = None
         
     def log_test(self, test_name: str, success: bool, details: str = ""):
         status = "✅ PASS" if success else "❌ FAIL"
