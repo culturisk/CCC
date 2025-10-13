@@ -145,8 +145,10 @@ const MainApp = () => {
 };
 
 const SettingsSection = () => {
-  const { user, updatePersona } = useAuth();
+  const { user, updatePersona, setUser } = useAuth();
   const [selectedPersona, setSelectedPersona] = useState(user?.selected_persona || 'casualBuddy');
+  const [showCityModal, setShowCityModal] = useState(false);
+  const [selectedCity, setSelectedCity] = useState(null);
 
   const personas = [
     { id: 'casualBuddy', name: 'Casual Buddy', emoji: '😎' },
@@ -156,9 +158,63 @@ const SettingsSection = () => {
     { id: 'wildCard', name: 'Wild Card', emoji: '🎭' }
   ];
 
+  const POPULAR_CITIES = [
+    { value: 'America/New_York', label: 'New York, USA', country: 'United States' },
+    { value: 'America/Los_Angeles', label: 'Los Angeles, USA', country: 'United States' },
+    { value: 'America/Chicago', label: 'Chicago, USA', country: 'United States' },
+    { value: 'Europe/London', label: 'London, UK', country: 'United Kingdom' },
+    { value: 'Europe/Paris', label: 'Paris, France', country: 'France' },
+    { value: 'Europe/Berlin', label: 'Berlin, Germany', country: 'Germany' },
+    { value: 'Asia/Tokyo', label: 'Tokyo, Japan', country: 'Japan' },
+    { value: 'Asia/Shanghai', label: 'Shanghai, China', country: 'China' },
+    { value: 'Asia/Mumbai', label: 'Mumbai, India', country: 'India' },
+    { value: 'Asia/Dubai', label: 'Dubai, UAE', country: 'United Arab Emirates' },
+    { value: 'Australia/Sydney', label: 'Sydney, Australia', country: 'Australia' },
+    { value: 'America/Toronto', label: 'Toronto, Canada', country: 'Canada' },
+    { value: 'America/Sao_Paulo', label: 'São Paulo, Brazil', country: 'Brazil' },
+    { value: 'Africa/Cairo', label: 'Cairo, Egypt', country: 'Egypt' },
+    { value: 'Europe/Moscow', label: 'Moscow, Russia', country: 'Russia' }
+  ];
+
   const handlePersonaChange = async (personaId) => {
     setSelectedPersona(personaId);
     await updatePersona(personaId);
+  };
+
+  const handleCityChange = async () => {
+    if (!selectedCity) {
+      toast.error('Please select a city');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `${API_BASE}/api/user/city`,
+        {
+          city: selectedCity.label.split(',')[0],
+          country: selectedCity.country,
+          timezone: selectedCity.value
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      // Update user in context
+      setUser({
+        ...user,
+        city: selectedCity.label.split(',')[0],
+        country: selectedCity.country,
+        timezone: `${selectedCity.label.split(',')[0]}, ${selectedCity.country} (${selectedCity.value})`
+      });
+
+      toast.success('City updated successfully');
+      setShowCityModal(false);
+    } catch (error) {
+      console.error('Failed to update city:', error);
+      toast.error('Failed to update city');
+    }
   };
 
   return (
