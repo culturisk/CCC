@@ -11,7 +11,7 @@ Since setting up a full Android development environment requires significant res
 **Easiest approach - No coding required**
 
 1. **Visit PWABuilder**: https://www.pwabuilder.com/
-2. **Enter your PWA URL**: `https://culturist-app.preview.emergentagent.com`
+2. **Enter your PWA URL**: `https://culturisk-calendar.preview.emergentagent.com`
 3. **Generate Android Package**: Click "Build My PWA"
 4. **Download APK**: PWABuilder will create a downloadable APK
 5. **Install**: Transfer APK to your Android device and install
@@ -66,7 +66,7 @@ npx cap open android
 npm install -g @bubblewrap/cli
 
 # Initialize TWA
-bubblewrap init --manifest https://culturist-app.preview.emergentagent.com/manifest.json
+bubblewrap init --manifest https://culturisk-calendar.preview.emergentagent.com/manifest.json
 
 # Build APK
 bubblewrap build
@@ -110,7 +110,7 @@ Your Cc Calendar PWA already includes:
 
 **For instant mobile use:**
 
-1. **Open in Mobile Browser**: https://culturist-app.preview.emergentagent.com
+1. **Open in Mobile Browser**: https://culturisk-calendar.preview.emergentagent.com
 2. **Add to Home Screen**: 
    - **Android**: Tap browser menu → "Add to Home screen"
    - **iOS**: Tap share button → "Add to Home Screen"
@@ -123,7 +123,7 @@ Your Cc Calendar PWA already includes:
 **For immediate results**: Use **PWABuilder** (Option 1)
 
 1. Go to https://www.pwabuilder.com/
-2. Enter: `https://culturist-app.preview.emergentagent.com`
+2. Enter: `https://culturisk-calendar.preview.emergentagent.com`
 3. Click "Start" and follow the wizard
 4. Download the generated APK
 5. Install on your Android device
