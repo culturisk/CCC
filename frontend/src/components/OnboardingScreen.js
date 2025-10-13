@@ -221,11 +221,16 @@ const OnboardingScreen = () => {
                 </label>
                 <Select
                   options={POPULAR_CITIES}
-                  styles={customSelectStyles}
+                  styles={{
+                    ...customSelectStyles,
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 })
+                  }}
                   placeholder="Search for your city..."
                   isSearchable={true}
                   onChange={handleCitySelect}
                   value={POPULAR_CITIES.find(city => city.value === formData.timezone) || null}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   This helps us show local events and set your timezone
