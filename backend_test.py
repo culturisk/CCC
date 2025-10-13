@@ -352,6 +352,278 @@ class CcCalendarAPITester:
             self.log_test("Persona Chat", False, f"Exception: {str(e)}")
             return False
     
+    def test_create_event(self):
+        """Test POST /api/events - Create a manual event"""
+        if not self.user_token:
+            self.log_test("Create Event", False, "No user token available")
+            return False
+            
+        try:
+            # Create a realistic event as specified in the review request
+            event_data = {
+                "title": "Downtown Cafe",
+                "description": "Great coffee and cozy atmosphere",
+                "event_type": "cafe",
+                "location": "123 Main Street",
+                "city": "New York",
+                "date": "Ongoing",
+                "rating": 4.5
+            }
+            
+            response = self.session.post(
+                f"{API_BASE}/events",
+                json=event_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "event" in data and "message" in data:
+                    event = data["event"]
+                    self.created_event_id = event["id"]
+                    
+                    # Verify event data
+                    if (event["title"] == event_data["title"] and 
+                        event["user_id"] == self.user_id and
+                        event["event_type"] == "cafe" and
+                        event["rating"] == 4.5):
+                        
+                        self.log_test("Create Event", True, 
+                                    f"Event created: {event['title']} (ID: {event['id']})")
+                        return True
+                    else:
+                        self.log_test("Create Event", False, 
+                                    f"Event data mismatch: {event}")
+                        return False
+                else:
+                    self.log_test("Create Event", False, 
+                                f"Missing required fields: {data}")
+                    return False
+            else:
+                self.log_test("Create Event", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Create Event", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_events(self):
+        """Test GET /api/events - Get all events for the user"""
+        if not self.user_token:
+            self.log_test("Get Events", False, "No user token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{API_BASE}/events", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "events" in data and "message" in data:
+                    events = data["events"]
+                    
+                    # Should have user events + default events
+                    if len(events) > 0:
+                        # Check for our created event
+                        user_event_found = False
+                        default_events_found = False
+                        
+                        for event in events:
+                            if event.get("id") == self.created_event_id:
+                                user_event_found = True
+                            if event.get("is_default"):
+                                default_events_found = True
+                        
+                        if user_event_found and default_events_found:
+                            self.log_test("Get Events", True, 
+                                        f"Retrieved {len(events)} events (user + default)")
+                            return True
+                        elif user_event_found:
+                            self.log_test("Get Events", True, 
+                                        f"Retrieved {len(events)} events including created event")
+                            return True
+                        else:
+                            self.log_test("Get Events", False, 
+                                        f"Created event not found in {len(events)} events")
+                            return False
+                    else:
+                        self.log_test("Get Events", False, "No events returned")
+                        return False
+                else:
+                    self.log_test("Get Events", False, 
+                                f"Missing required fields: {data}")
+                    return False
+            else:
+                self.log_test("Get Events", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Get Events", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_update_event(self):
+        """Test PUT /api/events/{event_id} - Update an event"""
+        if not self.user_token or not self.created_event_id:
+            self.log_test("Update Event", False, "No user token or event ID available")
+            return False
+            
+        try:
+            # Update the event we created
+            updated_data = {
+                "title": "Downtown Cafe (Updated)",
+                "description": "Great coffee, cozy atmosphere, and excellent pastries",
+                "event_type": "cafe",
+                "location": "123 Main Street (Updated)",
+                "city": "New York",
+                "date": "Ongoing",
+                "rating": 4.8  # Updated rating
+            }
+            
+            response = self.session.put(
+                f"{API_BASE}/events/{self.created_event_id}",
+                json=updated_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "message" in data and "successfully" in data["message"]:
+                    self.log_test("Update Event", True, 
+                                f"Event updated successfully: {data['message']}")
+                    return True
+                else:
+                    self.log_test("Update Event", False, 
+                                f"Unexpected response: {data}")
+                    return False
+            else:
+                self.log_test("Update Event", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Update Event", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_update_user_city(self):
+        """Test PUT /api/user/city - Update user's city"""
+        if not self.user_token:
+            self.log_test("Update User City", False, "No user token available")
+            return False
+            
+        try:
+            # Update city as specified in review request
+            city_data = {
+                "city": "London",
+                "country": "United Kingdom",
+                "timezone": "Europe/London"
+            }
+            
+            response = self.session.put(
+                f"{API_BASE}/user/city",
+                json=city_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if ("message" in data and "successfully" in data["message"] and
+                    data.get("city") == "London" and 
+                    data.get("country") == "United Kingdom"):
+                    
+                    self.log_test("Update User City", True, 
+                                f"City updated: {data['city']}, {data['country']}")
+                    return True
+                else:
+                    self.log_test("Update User City", False, 
+                                f"Unexpected response: {data}")
+                    return False
+            else:
+                self.log_test("Update User City", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Update User City", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_explore_nearby_updated(self):
+        """Test GET /api/explore/nearby - Get nearby places (manual events + default)"""
+        if not self.user_token:
+            self.log_test("Explore Nearby (Updated)", False, "No user token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{API_BASE}/explore/nearby", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "events" in data and "city" in data and "message" in data:
+                    events = data["events"]
+                    city = data["city"]
+                    
+                    if len(events) > 0:
+                        # Should have both user events and default events
+                        user_events = [e for e in events if not e.get("is_default")]
+                        default_events = [e for e in events if e.get("is_default")]
+                        
+                        self.log_test("Explore Nearby (Updated)", True, 
+                                    f"Found {len(events)} events ({len(user_events)} user, {len(default_events)} default) for {city}")
+                        return True
+                    else:
+                        self.log_test("Explore Nearby (Updated)", False, 
+                                    "No events returned")
+                        return False
+                else:
+                    self.log_test("Explore Nearby (Updated)", False, 
+                                f"Missing required fields: {data}")
+                    return False
+            else:
+                self.log_test("Explore Nearby (Updated)", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Explore Nearby (Updated)", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_delete_event(self):
+        """Test DELETE /api/events/{event_id} - Delete an event"""
+        if not self.user_token or not self.created_event_id:
+            self.log_test("Delete Event", False, "No user token or event ID available")
+            return False
+            
+        try:
+            response = self.session.delete(
+                f"{API_BASE}/events/{self.created_event_id}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "message" in data and "successfully" in data["message"]:
+                    self.log_test("Delete Event", True, 
+                                f"Event deleted successfully: {data['message']}")
+                    return True
+                else:
+                    self.log_test("Delete Event", False, 
+                                f"Unexpected response: {data}")
+                    return False
+            else:
+                self.log_test("Delete Event", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Delete Event", False, f"Exception: {str(e)}")
+            return False
+
     def test_google_maps_integration(self):
         """Test GET /api/explore/nearby (Google Maps integration)"""
         if not self.user_token:
