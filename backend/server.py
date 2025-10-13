@@ -295,7 +295,7 @@ async def get_tasks(
         end_date_dt = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
         query["date"] = {"$gte": start_date_dt, "$lte": end_date_dt}
     
-    tasks = await db.tasks.find(query).to_list(200)
+    tasks = await db.tasks.find(query, {"_id": 0}).to_list(200)
     return {"tasks": tasks}
 
 @app.put("/api/tasks/{task_id}")
