@@ -3,6 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import CalendarView from './CalendarView';
 import ExploreSection from './ExploreSection';
 import PersonaChat from './PersonaChat';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
+const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
 const MainApp = () => {
   const { user, trialStatus, logout } = useAuth();
