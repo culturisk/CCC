@@ -86,17 +86,89 @@ backend:
         agent: "testing"
         comment: "GET /api/persona-message/{message_type} returns contextual persona responses for all message types (morning_plan, reminder_task, explore_event). Persona templates loaded correctly from assets/persona_templates.json"
 
-  - task: "Google Maps Integration"
+  - task: "Manual Event Management - Create Event"
     implemented: true
     working: true
     file: "backend/server.py"
     stuck_count: 0
-    priority: "medium"
+    priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
-        comment: "GET /api/explore/nearby returns nearby places data. Currently using **mocked** data due to Google Maps API key not being configured, but endpoint structure and response format are correct"
+        comment: "POST /api/events creates manual events successfully. Fixed MongoDB ObjectId serialization issue. Users can create custom events with title, description, event_type, location, city, date, and rating fields. Returns event data with persona message."
+
+  - task: "Manual Event Management - Get Events"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/events retrieves all events for user including both user-created events and default cultural events. Properly combines user events with city-specific default events. Returns events array with persona message."
+
+  - task: "Manual Event Management - Update Event"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "PUT /api/events/{event_id} updates user events successfully. All event fields can be modified. Proper user ownership validation ensures users can only update their own events."
+
+  - task: "Manual Event Management - Delete Event"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "DELETE /api/events/{event_id} removes user events successfully. Proper user ownership validation ensures users can only delete their own events. Returns confirmation message."
+
+  - task: "User City Management"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "PUT /api/user/city updates user's city, country, and timezone successfully. Tested with London, United Kingdom, Europe/London. City changes are reflected in explore/nearby endpoint."
+
+  - task: "Explore Nearby - Manual Events"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/explore/nearby now returns user events + default cultural events instead of Google Maps data. No external API dependency. Works with updated user city. Returns events array, city, and persona message."
+
+  - task: "Onboarding with City Fields"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/onboarding now accepts city and country fields in addition to existing fields. Creates users with location data that integrates with event management system."
 
   - task: "Authentication & Authorization"
     implemented: true
