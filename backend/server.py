@@ -470,11 +470,15 @@ async def get_persona_message_api(message_type: str, current_user: dict = Depend
 
 # User Events - Manual Entry
 @app.post("/api/events")
-async def create_event(event: UserEvent, current_user: dict = Depends(get_current_user)):
+async def create_event(event: EventRequest, current_user: dict = Depends(get_current_user)):
     """Create a custom event/place for the user"""
-    event_dict = event.dict()
-    event_dict["user_id"] = current_user["id"]
+    # Create UserEvent with user_id
+    user_event = UserEvent(
+        user_id=current_user["id"],
+        **event.dict()
+    )
     
+    event_dict = user_event.dict()
     if isinstance(event_dict.get('created_at'), datetime):
         event_dict['created_at'] = event_dict['created_at'].isoformat()
     
