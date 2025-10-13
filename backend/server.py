@@ -63,6 +63,11 @@ class UserProfile(BaseModel):
     subscription_active: bool = False
     subscription_expires: Optional[datetime] = None
 
+class CityUpdate(BaseModel):
+    city: str
+    country: str
+    timezone: str
+
 
 class Task(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
