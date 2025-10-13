@@ -100,6 +100,8 @@ class DayPlan(BaseModel):
 class OnboardingRequest(BaseModel):
     name: str
     timezone: str
+    city: Optional[str] = None
+    country: Optional[str] = None
     personality_type: str
     selected_persona: str
 
