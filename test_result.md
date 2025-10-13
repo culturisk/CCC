@@ -191,9 +191,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "All backend API endpoints tested and working"
+    - "Onboarding Flow"
+    - "Main App Interface"
+    - "Calendar View & Task Management"
+    - "Explore Section"
+    - "Persona Chat System"
   stuck_tasks: []
-  test_all: false
+  test_all: true
   test_priority: "high_first"
 
 agent_communication:
