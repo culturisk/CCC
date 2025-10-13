@@ -335,6 +335,55 @@ const SettingsSection = () => {
           </p>
         </div>
       </div>
+
+      {/* City Change Modal */}
+      {showCityModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-2xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-white mb-4">
+              Change Your City
+            </h3>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Select your city
+              </label>
+              <select
+                onChange={(e) => {
+                  const city = POPULAR_CITIES.find(c => c.value === e.target.value);
+                  setSelectedCity(city);
+                }}
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cc-pink focus:border-transparent outline-none"
+              >
+                <option value="">Choose a city...</option>
+                {POPULAR_CITIES.map((city) => (
+                  <option key={city.value} value={city.value}>
+                    {city.label}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                This will update your timezone and local event recommendations
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowCityModal(false)}
+                className="flex-1 bg-gray-800 text-white px-4 py-3 rounded-lg hover:bg-gray-700 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCityChange}
+                className="flex-1 bg-cc-gradient text-white px-4 py-3 rounded-lg hover:opacity-90 transition-all"
+              >
+                Update City
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
