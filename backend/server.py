@@ -518,17 +518,14 @@ async def get_user_events(city: Optional[str] = None, current_user: dict = Depen
     }
 
 @app.put("/api/events/{event_id}")
-async def update_event(event_id: str, event: UserEvent, current_user: dict = Depends(get_current_user)):
+async def update_event(event_id: str, event: EventRequest, current_user: dict = Depends(get_current_user)):
     """Update an existing event"""
-    event_dict = event.dict()
-    event_dict["user_id"] = current_user["id"]
-    
-    if isinstance(event_dict.get('created_at'), datetime):
-        event_dict['created_at'] = event_dict['created_at'].isoformat()
+    # Create update data without changing user_id or id
+    update_data = event.dict()
     
     result = await db.events.update_one(
         {"id": event_id, "user_id": current_user["id"]},
-        {"$set": event_dict}
+        {"$set": update_data}
     )
     
     if result.matched_count == 0:
