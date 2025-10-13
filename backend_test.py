@@ -62,9 +62,11 @@ class CcCalendarAPITester:
     def test_user_onboarding(self):
         """Test POST /api/onboarding"""
         try:
-            # Use realistic user data
+            # Use realistic user data with timestamp to ensure uniqueness
+            import time
+            timestamp = int(time.time())
             onboarding_data = {
-                "name": "Sarah Johnson",
+                "name": f"Sarah Johnson {timestamp}",
                 "timezone": "America/New_York", 
                 "personality_type": "organized_planner",
                 "selected_persona": "caringSibling"
