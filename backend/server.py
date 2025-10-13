@@ -50,10 +50,19 @@ class UserEvent(BaseModel):
     rating: Optional[float] = None
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
-class CityUpdate(BaseModel):
-    city: str
-    country: str
+class UserProfile(BaseModel):
+    id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
     timezone: str
+    city: Optional[str] = None
+    country: Optional[str] = None
+    personality_type: str
+    selected_persona: str
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    trial_started: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    subscription_active: bool = False
+    subscription_expires: Optional[datetime] = None
+
 
 class Task(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
