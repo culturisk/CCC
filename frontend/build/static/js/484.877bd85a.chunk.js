@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkcc_calendar_pwa=self.webpackChunkcc_calendar_pwa||[]).push([[484],{6484:(a,c,e)=>{e.r(c),e.d(c,{SplashScreenWeb:()=>n});var s=e(5403);class n extends s.E_{async show(a){}async hide(a){}}}}]);
+//# sourceMappingURL=484.877bd85a.chunk.js.map
