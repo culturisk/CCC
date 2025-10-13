@@ -688,7 +688,7 @@ class CcCalendarAPITester:
     def run_all_tests(self):
         """Run all backend API tests"""
         print("=" * 60)
-        print("🧪 Cc Calendar Backend API Tests")
+        print("🧪 Cc Calendar Backend API Tests - Event Management Update")
         print(f"🌐 Testing against: {BASE_URL}")
         print("=" * 60)
         print()
@@ -698,12 +698,21 @@ class CcCalendarAPITester:
         # Test in logical order
         results["health"] = self.test_health_check()
         results["onboarding"] = self.test_user_onboarding()
+        
+        # Event Management Tests (New)
+        results["create_event"] = self.test_create_event()
+        results["get_events"] = self.test_get_events()
+        results["update_event"] = self.test_update_event()
+        results["update_user_city"] = self.test_update_user_city()
+        results["explore_nearby_updated"] = self.test_explore_nearby_updated()
+        results["delete_event"] = self.test_delete_event()
+        
+        # Task Management Tests (Existing)
         results["create_task"] = self.test_create_task()
         results["get_tasks"] = self.test_get_tasks()
         results["update_task"] = self.test_update_task()
         results["delete_task"] = self.test_delete_task()
         results["persona_chat"] = self.test_persona_chat()
-        results["google_maps"] = self.test_google_maps_integration()
         
         # Summary
         print("=" * 60)
