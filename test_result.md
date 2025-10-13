@@ -206,14 +206,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Onboarding Flow"
-    - "Main App Interface"
-    - "Calendar View & Task Management"
-    - "Explore Section"
-    - "Persona Chat System"
-  stuck_tasks: []
-  test_all: true
-  test_priority: "high_first"
+    - "Onboarding Flow" # CRITICAL BLOCKING ISSUE
+  stuck_tasks:
+    - "Onboarding Flow" # React Select dropdown not functional
+  test_all: false
+  test_priority: "stuck_first"
 
 agent_communication:
   - agent: "testing"
